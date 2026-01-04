@@ -206,29 +206,54 @@ export default function App() {
     return true;
   };
 
-  useEffect(() => {
-    const checkKey = async () => {
-      try {
+ useEffect(() => {
+  const checkKey = async () => {
+    try {
+      if (
+        typeof window !== "undefined" &&
+        // @ts-ignore
+        window.aistudio &&
+        // @ts-ignore
+        typeof window.aistudio.hasSelectedApiKey === "function"
+      ) {
         // @ts-ignore
         const selected = await window.aistudio.hasSelectedApiKey();
-        setHasKey(selected);
-      } catch (e) {
-        console.error("Error checking key selection:", e);
+        setHasKey(Boolean(selected));
+      } else {
+        // IMPORTANT: default safely on Render
+        setHasKey(false);
       }
-    };
-    checkKey();
-  }, []);
-
-  const handleSelectKey = async () => {
-    try {
-      // @ts-ignore
-      await window.aistudio.openSelectKey();
-      // Assume success as per instructions to avoid race conditions
-      setHasKey(true);
     } catch (e) {
-      console.error("Error opening key selection:", e);
+      console.error("Error checking key selection:", e);
+      setHasKey(false);
     }
   };
+
+  checkKey();
+}, []);
+
+const handleSelectKey = async () => {
+  try {
+    if (
+      typeof window !== "undefined" &&
+      // @ts-ignore
+      window.aistudio &&
+      // @ts-ignore
+      typeof window.aistudio.openSelectKey === "function"
+    ) {
+      // @ts-ignore
+      await window.aistudio.openSelectKey();
+      setHasKey(true);
+    } else {
+      alert(
+        "API key selector is not available in this environment. Please run this app inside Google AI Studio."
+      );
+    }
+  } catch (e) {
+    console.error("Error opening key selection:", e);
+    setHasKey(false);
+  }
+};
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!checkLimit()) return;
