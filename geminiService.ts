@@ -4,7 +4,7 @@ import { UserPreferences } from "./types";
 export class GeminiService {
   private static getAi() {
     // This connects to the API Key you provide during deployment
-    return new GoogleGenerativeAI(process.env.API_KEY || '');
+    return new GoogleGenerativeAI("AIzaSyB98kLG8NeriXhqdzoQQZ5ga4gv4gLHHkI");
   }
 
   static async generatePlushiePreview(imageBase64: string): Promise<string> {
